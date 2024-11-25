@@ -20,10 +20,10 @@ spec:
 apiVersion: v1
 kind: Pod
 metadata:
-  name: app
+  name: ebs-claim
 spec:
   containers:
-  - name: app
+  - name: ebs-claim
     image: nginx
     command: ["/bin/sh"]
     args: ["-c", "while true; do echo $(date -u) >> /data/out.txt; sleep 5; done"]
