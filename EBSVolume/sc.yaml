@@ -11,14 +11,6 @@ spec:
     driver: ebs.csi.aws.com
     fsType: ext4
     volumeHandle: vol-05e87dd36cdc56203
-  nodeAffinity:
-    required:
-      nodeSelectorTerms:
-        - matchExpressions:
-            - key: topology.kubernetes.io/zone
-              operator: In
-              values:
-                - us-east-1b
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
