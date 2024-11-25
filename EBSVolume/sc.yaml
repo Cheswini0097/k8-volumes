@@ -36,7 +36,7 @@ spec:
 apiVersion: v1
 kind: Pod
 metadata:
-  name: ebs-static
+  name: ebsstatic
 spec:
   containers:
   - name: ebs-static
@@ -47,6 +47,6 @@ spec:
     - name: ebs-static
       mountPath: /usr/share/nginx/html
   volumes:
-  - name: persistent-storage
+  - name: ebs-static
     persistentVolumeClaim:
       claimName: ebs-static                  
