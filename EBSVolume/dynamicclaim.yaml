@@ -10,18 +10,20 @@ kind: PersistentVolumeClaim
 metadata:
   name: ebs-static
 spec:
-  storageClassName: "" # Empty string must be explicitly set otherwise default StorageClass will be set
-  volumeName: ebs-static
+  storageClassName: "" # Explicitly set to empty for static PV binding
+  volumeName: ebs-static # Match with the static PersistentVolume name (PV must exist)
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 5Gi 
+      storage: 5Gi
 ---
 apiVersion: v1
 kind: Pod
 metadata:
   name: nginx
+  labels: # Adding labels to ensure compatibility with Service selector
+    app: nginx
 spec:
   containers:
   - name: app
@@ -29,23 +31,23 @@ spec:
     command: ["/bin/sh"]
     args: ["-c", "while true; do echo $(date -u) >> /data/out.txt; sleep 5; done"]
     volumeMounts:
-    - name: ebs-static
+    - name: ebs-volume # Correct volume name to match below
       mountPath: /data
   volumes:
-  - name: ebs-static
+  - name: ebs-volume # Match volumeMount name
     persistentVolumeClaim:
       claimName: ebs-static
 ---
-kind: Service
 apiVersion: v1
+kind: Service
 metadata:
   name: frontend
 spec:
   type: LoadBalancer
   selector:
-    name: nginx
+    app: nginx # Match Pod label for Service discovery
   ports:
   - name: frontend-port
     protocol: TCP
-    port: 80 # service port
-    targetPort: 80 # container port
+    port: 80 # Service port
+    targetPort: 80 # Container port
