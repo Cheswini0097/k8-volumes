@@ -38,6 +38,8 @@ kind: Pod
 metadata:
   name: ebsstatic
 spec:
+  nodeSelector:
+    topology.kubernetes.io/zone: us-east-1c
   containers:
   - name: ebs-static
     image: nginx
