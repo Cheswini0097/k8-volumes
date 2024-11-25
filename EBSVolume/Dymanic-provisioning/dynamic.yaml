@@ -28,4 +28,20 @@ spec:
   volumes:
   - name: ebs-dynamic
     persistentVolumeClaim:
-      claimName: ebs-dynamic      
+      claimName: ebs-dynamic
+---
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: nginx
+spec:
+  type: LoadBalancer
+  selector:
+    purpose: ebs-dynamic
+  ports:
+  - name: nginx-svc-port
+    protocol: TCP
+    port: 80 # service port
+    targetPort: 80 # container port
+    nodePort: 30007      
