@@ -1,53 +1,7 @@
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: ebs-sc
+  name: expense-ebs
+reclaimPolicy: Retain
 provisioner: ebs.csi.aws.com
-volumeBindingMode: WaitForFirstConsumer
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: ebs-static
-spec:
-  storageClassName: "" # Explicitly set to empty for static PV binding
-  volumeName: ebs-static # Match with the static PersistentVolume name (PV must exist)
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 5Gi
----
-apiVersion: v1
-kind: Pod
-metadata:
-  name: nginx
-  labels: # Adding labels to ensure compatibility with Service selector
-    app: nginx
-spec:
-  containers:
-  - name: app
-    image: nginx
-    command: ["/bin/sh"]
-    args: ["-c", "while true; do echo $(date -u) >> /data/out.txt; sleep 5; done"]
-    volumeMounts:
-    - name: ebs-volume # Correct volume name to match below
-      mountPath: /data
-  volumes:
-  - name: ebs-volume # Match volumeMount name
-    persistentVolumeClaim:
-      claimName: ebs-static
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: frontend
-spec:
-  type: LoadBalancer
-  selector:
-    app: nginx # Match Pod label for Service discovery
-  ports:
-  - name: frontend-port
-    protocol: TCP
-    port: 80 # Service port
-    targetPort: 80 # Container port
+volumeBindingMode: WaitForFirstConsumer # storage will be created when pod is getting created
