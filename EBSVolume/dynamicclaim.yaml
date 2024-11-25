@@ -1,36 +1,51 @@
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: ebs-claim
+  name: ebs-sc
 provisioner: ebs.csi.aws.com
 volumeBindingMode: WaitForFirstConsumer
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: ebs-claim
+  name: ebs-static
 spec:
+  storageClassName: "" # Empty string must be explicitly set otherwise default StorageClass will be set
+  volumeName: ebs-static
   accessModes:
     - ReadWriteOnce
-  storageClassName: ebs-claim
   resources:
     requests:
-      storage: 4Gi
+      storage: 5Gi 
 ---
 apiVersion: v1
 kind: Pod
 metadata:
-  name: ebs-claim
+  name: nginx
 spec:
   containers:
-  - name: ebs-claim
+  - name: app
     image: nginx
     command: ["/bin/sh"]
     args: ["-c", "while true; do echo $(date -u) >> /data/out.txt; sleep 5; done"]
     volumeMounts:
-    - name: ebs-claim 
+    - name: ebs-static
       mountPath: /data
   volumes:
-  - name: persistent-storage
+  - name: ebs-static
     persistentVolumeClaim:
-      claimName: ebs-claim      
+      claimName: ebs-static
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: frontend
+spec:
+  type: LoadBalancer
+  selector:
+    name: nginx
+  ports:
+  - name: frontend-port
+    protocol: TCP
+    port: 80 # service port
+    targetPort: 80 # container port
