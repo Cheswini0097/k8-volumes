@@ -43,4 +43,19 @@ spec:
   volumes:
   - name: ebs-static
     persistentVolumeClaim:
-      claimName: ebs-static      
+      claimName: ebs-static
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: frontend
+  namespace: expense
+spec:
+  type: LoadBalancer
+  selector:
+    name: nginx
+  ports:
+  - name: frontend-port
+    protocol: TCP
+    port: 80 # service port
+    targetPort: 80 # container port
