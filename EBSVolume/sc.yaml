@@ -39,7 +39,7 @@ metadata:
   name: app
 spec:
   containers:
-  - name: app
+  - name: ebs-static
     image: nginx
     command: ["/bin/sh"]
     args: ["-c", "while true; do echo $(date -u) >> /data/out.txt; sleep 5; done"]
